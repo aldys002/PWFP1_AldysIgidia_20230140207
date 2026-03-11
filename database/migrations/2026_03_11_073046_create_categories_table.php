@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('product_id')->constrained()->onDelete('cascade');
-    $table->string('name');
-    $table->timestamps();
-});
+
+    Schema::create('categories', function (Blueprint $table) {
+        $table->id(); // int, primary key
+        // Relasi ke tabel products
+        $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+        $table->string('name');
+        $table->timestamps();
+    });
     }
 
     /**
