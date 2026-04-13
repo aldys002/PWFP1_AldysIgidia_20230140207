@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate; // Tambahkan ini
+use App\Http\Requests\StoreProductRequest; // 1. Pastikan ini di-import
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -21,14 +22,14 @@ class ProductController extends Controller
         return view('product.create', compact('users'));
     }
 
-    public function store(Request $request)
+    // 2. Ganti Request $request menjadi StoreProductRequest $request
+    public function store(StoreProductRequest $request) 
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:25',
-            'quantity' => 'required|integer',
-            'price' => 'required|numeric',
-            'user_id' => 'required|exists:users,id',
-        ]);
+        // Validasi otomatis berjalan di sini sebelum masuk ke logic bawah
+        $validated = $request->validated();
+        
+        // Tambahkan user_id otomatis dari siapa yang login
+        $validated['user_id'] = Auth::id();
 
         Product::create($validated);
 
@@ -43,38 +44,28 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        // Gunakan Gate::authorize untuk memanggil ProductPolicy@update
         Gate::authorize('update', $product);
-
         $users = User::orderBy('name')->get();
         return view('product.edit', compact('product', 'users'));
     }
 
-    public function update(Request $request, Product $product) // Pakai Route Model Binding agar lebih simpel
+    // 3. Update juga fungsi update-nya
+    public function update(StoreProductRequest $request, Product $product) 
     {
-        // Gunakan Gate::authorize untuk memanggil ProductPolicy@update
         Gate::authorize('update', $product);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:25',
-            'quantity' => 'required|integer',
-            'price' => 'required|numeric',
-            'user_id' => 'required|exists:users,id',
-        ]);
+        // Menggunakan data yang sudah divalidasi oleh Form Request
+        $validated = $request->validated();
 
         $product->update($validated);
 
         return redirect()->route('product.index')->with('success', 'Product updated successfully');
     }
 
-    // Biasanya di Laravel fungsi hapus dinamakan 'destroy'
     public function destroy(Product $product) 
     {
-        // Gunakan Gate::authorize untuk memanggil ProductPolicy@delete
         Gate::authorize('delete', $product);
-
         $product->delete();
-
         return redirect()->route('product.index')->with('success', 'Product berhasil dihapus');
     }
 }
