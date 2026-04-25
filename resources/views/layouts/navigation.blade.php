@@ -20,6 +20,13 @@
                     <x-nav-link :href="route('product.index')" :active="request()->routeIs('product.*')">
                         {{ __('Product') }}
                     </x-nav-link>
+
+                    {{-- Category Link - Hanya untuk Admin --}}
+                    @can('manage-category')
+                        <x-nav-link :href="route('category.index')" :active="request()->routeIs('category.*')">
+                            {{ __('Category') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -31,7 +38,7 @@
                             <div class="flex flex-col text-right">
                                 <span class="font-bold text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</span>
                                 
-                                {{-- 🔥 ROLE BADGE (Sesuai Tugas Kelas B) --}}
+                                {{-- Role Badge --}}
                                 <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full inline-block w-fit ml-auto
                                     {{ Auth::user()->role == 'admin' 
                                         ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold' 
@@ -89,6 +96,13 @@
             <x-responsive-nav-link :href="route('product.index')" :active="request()->routeIs('product.*')">
                 {{ __('Product') }}
             </x-responsive-nav-link>
+
+            {{-- Category Link Mobile - Hanya untuk Admin --}}
+            @can('manage-category')
+                <x-responsive-nav-link :href="route('category.index')" :active="request()->routeIs('category.*')">
+                    {{ __('Category') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

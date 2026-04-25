@@ -5,27 +5,21 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
-{
+{ 
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-
+ public function up(): void
+{
     Schema::create('categories', function (Blueprint $table) {
-        $table->id(); // int, primary key
-        // Relasi ke tabel products
-        $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+        $table->id();
         $table->string('name');
         $table->timestamps();
     });
-    }
+}
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('categories');
-    }
+public function down(): void
+{
+    Schema::dropIfExists('categories');
+}
 };

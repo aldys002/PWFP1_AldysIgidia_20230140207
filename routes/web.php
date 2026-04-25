@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,6 +44,17 @@ Route::middleware('auth')->group(function () {
     // Ubah ke destroy agar sesuai standar (opsional, tapi lebih konsisten)
     Route::delete('/product/delete/{product}', [ProductController::class, 'destroy'])->name('product.delete');
 
+    Route::middleware('can:manage-category')->group(function () {
+        Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
+        Route::get('/category/create', [CategoryController::class, 'create'])->name('category.create');
+        Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
+        
+        // Tambahkan jika butuh edit/delete kategori
+        Route::get('/category/edit/{category}', [CategoryController::class, 'edit'])->name('category.edit');
+        Route::put('/category/{category}', [CategoryController::class, 'update'])->name('category.update');
+        Route::delete('/category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
+    
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -4,23 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Category;
 use App\Http\Requests\StoreProductRequest; // 1. Pastikan ini di-import
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
+
 class ProductController extends Controller
 {
     public function index()
-    {   
-        $products = Product::with('user')->paginate(5);
-        return view('product.index', compact('products'));
-    }
+{   
+    // Tambahkan eager loading 'category' agar tidak berat saat load data
+    $products = Product::with(['user', 'category'])->paginate(5);
+    return view('product.index', compact('products'));
+}
 
     public function create()
-    {
-        $users = User::orderBy('name')->get();
-        return view('product.create', compact('users'));
-    }
+{
+    $users = User::orderBy('name')->get();
+    // ✅ TAMBAHKAN INI: Ambil data kategori untuk dropdown (Sesuai PDF Source 74)
+    $categories = Category::orderBy('name')->get(); 
+    return view('product.create', compact('users', 'categories'));
+}
 
     // 2. Ganti Request $request menjadi StoreProductRequest $request
     public function store(StoreProductRequest $request) 
@@ -43,11 +48,13 @@ class ProductController extends Controller
     }
 
     public function edit(Product $product)
-    {
-        Gate::authorize('update', $product);
-        $users = User::orderBy('name')->get();
-        return view('product.edit', compact('product', 'users'));
-    }
+{
+    Gate::authorize('update', $product);
+    $users = User::orderBy('name')->get();
+    // ✅ TAMBAHKAN INI: Agar saat edit, dropdown kategori tetap muncul
+    $categories = Category::orderBy('name')->get(); 
+    return view('product.edit', compact('product', 'users', 'categories'));
+}
 
     // 3. Update juga fungsi update-nya
     public function update(StoreProductRequest $request, Product $product) 
